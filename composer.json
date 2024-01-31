@@ -1,0 +1,18 @@
+{
+    "name": "ucan-lab/laravel-blink-logger",
+    "description": "Comprehensive Logging Tool for Database Activities in Laravel.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "LaravelBlinkLogger\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "ucan-lab",
+            "email": "35098175+ucan-lab@users.noreply.github.com"
+        }
+    ],
+    "require": {}
+}
