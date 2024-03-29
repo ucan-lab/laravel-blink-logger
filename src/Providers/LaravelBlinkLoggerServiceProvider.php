@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LaravelBlinkLogger\Providers;
 
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Database\Events\TransactionCommitted;
@@ -29,10 +31,14 @@ class LaravelBlinkLoggerServiceProvider extends ServiceProvider
         );
 
         if (config('blink-logger.sql.enabled')) {
-            $this->registerSqlLogger();
+            $this->registerLegacySqlLogger();
         }
     }
 
+    /**
+     * php >= 8.1.0
+     * laravel/framework >= 10.15.0
+     */
     private function registerSqlLogger(): void
     {
         DB::listen(static function(QueryExecuted $event) {
@@ -44,6 +50,47 @@ class LaravelBlinkLoggerServiceProvider extends ServiceProvider
                 );
 
             if ($event->time > config('blink-logger.sql.slow_query_time')) {
+                Log::warning(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
+            } else {
+                Log::debug(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
+            }
+        });
+
+        Event::listen(static fn (TransactionBeginning $event) => Log::debug('START TRANSACTION'));
+        Event::listen(static fn (TransactionCommitted $event) => Log::debug('COMMIT'));
+        Event::listen(static fn (TransactionRolledBack $event) => Log::debug('ROLLBACK'));
+    }
+
+    /**
+     * For laravel/framework version 9.x
+     * @deprecated
+     */
+    private function registerLegacySqlLogger(): void
+    {
+        DB::listen(static function (QueryExecuted $event): void {
+            $sql = $event->sql;
+
+            foreach ($event->bindings as $binding) {
+                if (is_string($binding)) {
+                    $binding = "'{$binding}'";
+                } elseif (is_bool($binding)) {
+                    $binding = $binding ? '1' : '0';
+                } elseif (is_int($binding)) {
+                    $binding = (string) $binding;
+                } elseif (is_float($binding)) {
+                    $binding = (string) $binding;
+                } elseif ($binding === null) {
+                    $binding = 'NULL';
+                } elseif ($binding instanceof Carbon) {
+                    $binding = "'{$binding->toDateTimeString()}'";
+                } elseif ($binding instanceof DateTime) {
+                    $binding = "'{$binding->format('Y-m-d H:i:s')}'";
+                }
+
+                $sql = preg_replace('/\\?/', $binding, $sql, 1);
+            }
+
+            if ($event->time > config('logging.sql.slow_query_time')) {
                 Log::warning(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
             } else {
                 Log::debug(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
