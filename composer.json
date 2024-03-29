@@ -14,5 +14,20 @@
             "email": "35098175+ucan-lab@users.noreply.github.com"
         }
     ],
-    "require": {}
+    "require": {
+        "php": "^8.1",
+        "laravel/framework": "^10.15.0"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LaravelBlinkLogger\\Providers\\LaravelBlinkLoggerServiceProvider"
+            ]
+        }
+    }
 }
