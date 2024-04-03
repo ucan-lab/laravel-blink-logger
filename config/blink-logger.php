@@ -14,6 +14,7 @@ return [
 
     'sql' => [
         'enabled' => env('LOG_SQL_ENABLED', false),
+        'channel' => config('logging.default'),
         'slow_query_time' => env('LOG_SQL_SLOW_QUERY_TIME', 2000), // ms
     ],
 

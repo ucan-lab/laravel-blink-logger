@@ -60,15 +60,15 @@ class LaravelBlinkLoggerServiceProvider extends ServiceProvider
                 );
 
             if ($event->time > config('blink-logger.sql.slow_query_time')) {
-                Log::warning(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
+                Log::channel(config('blink-logger.sql.channel'))->warning(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
             } else {
-                Log::debug(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
+                Log::channel(config('blink-logger.sql.channel'))->debug(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
             }
         });
 
-        Event::listen(static fn (TransactionBeginning $event) => Log::debug('START TRANSACTION'));
-        Event::listen(static fn (TransactionCommitted $event) => Log::debug('COMMIT'));
-        Event::listen(static fn (TransactionRolledBack $event) => Log::debug('ROLLBACK'));
+        Event::listen(static fn (TransactionBeginning $event) => Log::channel(config('blink-logger.sql.channel'))->debug('START TRANSACTION'));
+        Event::listen(static fn (TransactionCommitted $event) => Log::channel(config('blink-logger.sql.channel'))->debug('COMMIT'));
+        Event::listen(static fn (TransactionRolledBack $event) => Log::channel(config('blink-logger.sql.channel'))->debug('ROLLBACK'));
     }
 
     /**
@@ -101,14 +101,14 @@ class LaravelBlinkLoggerServiceProvider extends ServiceProvider
             }
 
             if ($event->time > config('logging.sql.slow_query_time')) {
-                Log::warning(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
+                Log::channel(config('blink-logger.sql.channel'))->warning(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
             } else {
-                Log::debug(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
+                Log::channel(config('blink-logger.sql.channel'))->debug(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
             }
         });
 
-        Event::listen(static fn (TransactionBeginning $event) => Log::debug('START TRANSACTION'));
-        Event::listen(static fn (TransactionCommitted $event) => Log::debug('COMMIT'));
-        Event::listen(static fn (TransactionRolledBack $event) => Log::debug('ROLLBACK'));
+        Event::listen(static fn (TransactionBeginning $event) => Log::channel(config('blink-logger.sql.channel'))->debug('START TRANSACTION'));
+        Event::listen(static fn (TransactionCommitted $event) => Log::channel(config('blink-logger.sql.channel'))->debug('COMMIT'));
+        Event::listen(static fn (TransactionRolledBack $event) => Log::channel(config('blink-logger.sql.channel'))->debug('ROLLBACK'));
     }
 }
