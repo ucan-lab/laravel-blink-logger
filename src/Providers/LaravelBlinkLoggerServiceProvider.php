@@ -10,6 +10,8 @@ use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Database\Events\TransactionCommitted;
 use Illuminate\Database\Events\TransactionRolledBack;
+use Illuminate\Foundation\Http\Kernel;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
@@ -17,11 +19,19 @@ use Illuminate\Support\ServiceProvider;
 
 class LaravelBlinkLoggerServiceProvider extends ServiceProvider
 {
-    public function boot(): void
+    public function boot(Router $router, Kernel $kernel): void
     {
         $this->publishes([
             __DIR__ . '/../../config/blink-logger.php' => config_path('blink-logger.php'),
-        ]);
+        ], 'blink-logger');
+
+        $middleware = config('blink-logger.request.middleware');
+        $middlewareGroupNames = config('blink-logger.request.middleware_group_names');
+        foreach ($middlewareGroupNames as $middlewareGroupName) {
+             $router->middlewareGroup($middlewareGroupName, [$middleware]);
+        }
+
+        $kernel->prependToMiddlewarePriority($middleware);
     }
 
     public function register(): void

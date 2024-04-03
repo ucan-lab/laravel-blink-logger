@@ -1,6 +1,6 @@
 {
     "name": "ucan-lab/laravel-blink-logger",
-    "description": "Comprehensive Logging Tool for Database Activities in Laravel.",
+    "description": "Comprehensive Logging Tool for Laravel.",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -16,7 +16,7 @@
     ],
     "require": {
         "php": "^8.0.2",
-        "laravel/framework": "^9.0"
+        "laravel/framework": "^9.0|^10.0|^11.0"
     },
     "config": {
         "optimize-autoloader": true,
