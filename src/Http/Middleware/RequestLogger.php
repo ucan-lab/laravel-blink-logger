@@ -10,10 +10,8 @@ class RequestLogger
 {
     public function handle(Request $request, Closure $next)
     {
-        if (config('blink-logger.request.enabled')) {
-            if ($this->isWrite($request)) {
-                $this->write($request);
-            }
+        if ($this->isWrite($request)) {
+            $this->write($request);
         }
 
         return $next($request);
