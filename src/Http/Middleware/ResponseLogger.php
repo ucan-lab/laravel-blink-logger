@@ -6,6 +6,7 @@ namespace LaravelBlinkLogger\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Config\Repository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Log\LogManager;
@@ -24,13 +25,14 @@ class ResponseLogger
 
     public function handle(Request $request, Closure $next)
     {
-        $response = $next($request);
-
-        if ($this->isWrite($request)) {
-            $this->write($request, $response);
-        }
-
         return $next($request);
+    }
+
+    public function terminate(Request $request, Response|JsonResponse $response): void
+    {
+        if ($this->isWrite($request)) {
+            $this->write($response);
+        }
     }
 
     protected function isWrite(Request $request): bool
@@ -48,7 +50,7 @@ class ResponseLogger
         return true;
     }
 
-    protected function write(Request $request, Response $response): void
+    protected function write(Response|JsonResponse $response): void
     {
         $this->logger->channel($this->config->get('blink-logger.http.response.channel'))->debug(sprintf(
             '%d %s',
