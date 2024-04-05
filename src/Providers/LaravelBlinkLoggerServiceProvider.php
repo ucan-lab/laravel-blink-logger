@@ -35,9 +35,20 @@ class LaravelBlinkLoggerServiceProvider extends ServiceProvider
         }
 
         // Request Logger
-        if ($config->get('blink-logger.request.enabled')) {
-            $middleware = $config->get('blink-logger.request.middleware');
-            $middlewareGroupNames = $config->get('blink-logger.request.middleware_group_names');
+        if ($config->get('blink-logger.http.request.enabled')) {
+            $middleware = $config->get('blink-logger.http.request.middleware');
+            $middlewareGroupNames = $config->get('blink-logger.http.request.middleware_group_names');
+            foreach ($middlewareGroupNames as $middlewareGroupName) {
+                $router->middlewareGroup($middlewareGroupName, [$middleware]);
+            }
+
+            $kernel->prependToMiddlewarePriority($middleware);
+        }
+
+        // Response Logger
+        if ($config->get('blink-logger.http.response.enabled')) {
+            $middleware = $config->get('blink-logger.http.response.middleware');
+            $middlewareGroupNames = $config->get('blink-logger.http.response.middleware_group_names');
             foreach ($middlewareGroupNames as $middlewareGroupName) {
                 $router->middlewareGroup($middlewareGroupName, [$middleware]);
             }
