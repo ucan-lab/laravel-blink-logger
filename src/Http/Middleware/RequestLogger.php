@@ -1,18 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaravelBlinkLogger\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Http\Request;
 use Illuminate\Log\LogManager;
-use Illuminate\Support\Str;
 use Psr\Log\LoggerInterface;
 
 class RequestLogger
 {
     /**
-     * @param Repository $config
      * @param LogManager $logger
      */
     public function __construct(

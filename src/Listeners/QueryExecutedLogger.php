@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaravelBlinkLogger\Listeners;
 
 use Carbon\Carbon;
@@ -13,7 +15,6 @@ class QueryExecutedLogger
 {
     /**
      * @param LogManager $logger
-     * @param Repository $config
      */
     public function __construct(
         private LoggerInterface $logger,

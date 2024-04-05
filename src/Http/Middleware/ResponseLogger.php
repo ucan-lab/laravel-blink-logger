@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaravelBlinkLogger\Http\Middleware;
 
 use Closure;
@@ -12,7 +14,6 @@ use Psr\Log\LoggerInterface;
 class ResponseLogger
 {
     /**
-     * @param Repository $config
      * @param LogManager $logger
      */
     public function __construct(

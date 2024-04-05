@@ -29,5 +29,8 @@
                 "LaravelBlinkLogger\\Providers\\LaravelBlinkLoggerServiceProvider"
             ]
         }
+    },
+    "require-dev": {
+        "laravel/pint": "^1.15"
     }
 }
