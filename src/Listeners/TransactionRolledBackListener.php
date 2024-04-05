@@ -19,6 +19,6 @@ class TransactionRolledBackListener
 
     public function handle(): void
     {
-        $this->logger->channel($this->config->get('blink-logger.sql.channel'))->debug('ROLLBACK');
+        $this->logger->channel($this->config->get('blink-logger.query.channel'))->debug('ROLLBACK');
     }
 }

@@ -19,6 +19,6 @@ class TransactionCommittedListener
 
     public function handle(): void
     {
-        $this->logger->channel($this->config->get('blink-logger.sql.channel'))->debug('COMMIT');
+        $this->logger->channel($this->config->get('blink-logger.query.channel'))->debug('COMMIT');
     }
 }

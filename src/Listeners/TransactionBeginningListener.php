@@ -3,7 +3,6 @@
 namespace LaravelBlinkLogger\Listeners;
 
 use Illuminate\Config\Repository;
-use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Log\LogManager;
 use Psr\Log\LoggerInterface;
 
@@ -20,6 +19,6 @@ class TransactionBeginningListener
 
     public function handle(): void
     {
-        $this->logger->channel($this->config->get('blink-logger.sql.channel'))->debug('START TRANSACTION');
+        $this->logger->channel($this->config->get('blink-logger.query.channel'))->debug('START TRANSACTION');
     }
 }
