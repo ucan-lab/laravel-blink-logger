@@ -30,9 +30,7 @@ return [
             'enabled' => env('LOG_REQUEST_ENABLED', false),
             'channel' => config('logging.default'),
             'include_paths' => [],
-            'exclude_paths' => [
-                '_debugbar',
-            ],
+            'exclude_paths' => [],
             'middleware' => \LaravelBlinkLogger\Http\Middleware\RequestLogger::class,
             'middleware_group_names' => [
                 'web',
