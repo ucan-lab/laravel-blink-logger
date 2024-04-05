@@ -9,7 +9,7 @@ use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Log\LogManager;
 use Psr\Log\LoggerInterface;
 
-class QueryExecutedListener
+class QueryExecutedLogger
 {
     /**
      * @param LogManager $logger
