@@ -1,7 +1,5 @@
 name: Assign Author
 on:
-  issues:
-    types: [opened]
   pull_request:
     types: [opened]
 jobs:
