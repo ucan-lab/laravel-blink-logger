@@ -13,10 +13,10 @@ use Illuminate\Database\Events\TransactionRolledBack;
 use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
-use LaravelBlinkLogger\Listeners\QueryExecutedListener;
-use LaravelBlinkLogger\Listeners\TransactionBeginningListener;
-use LaravelBlinkLogger\Listeners\TransactionCommittedListener;
-use LaravelBlinkLogger\Listeners\TransactionRolledBackListener;
+use LaravelBlinkLogger\Listeners\QueryExecutedLogger;
+use LaravelBlinkLogger\Listeners\TransactionBeginningLogger;
+use LaravelBlinkLogger\Listeners\TransactionCommittedLogger;
+use LaravelBlinkLogger\Listeners\TransactionRolledBackLogger;
 
 class LaravelBlinkLoggerServiceProvider extends ServiceProvider
 {
@@ -28,10 +28,10 @@ class LaravelBlinkLoggerServiceProvider extends ServiceProvider
 
         // Query Logger
         if ($config->get('blink-logger.query.enabled')) {
-            $events->listen(QueryExecuted::class, QueryExecutedListener::class);
-            $events->listen(TransactionBeginning::class, TransactionBeginningListener::class);
-            $events->listen(TransactionCommitted::class, TransactionCommittedListener::class);
-            $events->listen(TransactionRolledBack::class, TransactionRolledBackListener::class);
+            $events->listen(QueryExecuted::class, QueryExecutedLogger::class);
+            $events->listen(TransactionBeginning::class, TransactionBeginningLogger::class);
+            $events->listen(TransactionCommitted::class, TransactionCommittedLogger::class);
+            $events->listen(TransactionRolledBack::class, TransactionRolledBackLogger::class);
         }
 
         // Request Logger
