@@ -36,18 +36,13 @@
     },
     {
         "name": "question",
-        "color": "Further information is requested",
-        "description": "d876e3"
+        "color": "d876e3",
+        "description": "Further information is requested"
     },
     {
         "name": "wontfix",
         "color": "ffffff",
         "description": "This will not be worked on"
-    },
-    {
-        "name": "release",
-        "color": "003B46",
-        "description": "New release"
     },
     {
         "name": "major",
