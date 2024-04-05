@@ -6,7 +6,7 @@ use Illuminate\Config\Repository;
 use Illuminate\Log\LogManager;
 use Psr\Log\LoggerInterface;
 
-class TransactionRolledBackListener
+class TransactionRolledBackLogger
 {
     /**
      * @param LogManager $logger

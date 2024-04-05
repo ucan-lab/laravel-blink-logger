@@ -6,7 +6,7 @@ use Illuminate\Config\Repository;
 use Illuminate\Log\LogManager;
 use Psr\Log\LoggerInterface;
 
-class TransactionCommittedListener
+class TransactionBeginningLogger
 {
     /**
      * @param LogManager $logger
@@ -19,6 +19,6 @@ class TransactionCommittedListener
 
     public function handle(): void
     {
-        $this->logger->channel($this->config->get('blink-logger.query.channel'))->debug('COMMIT');
+        $this->logger->channel($this->config->get('blink-logger.query.channel'))->debug('START TRANSACTION');
     }
 }
