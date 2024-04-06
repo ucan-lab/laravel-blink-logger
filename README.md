@@ -13,7 +13,7 @@ $ composer require --dev ucan-lab/laravel-blink-logger
 Debug log output is disabled by default, so please enable it in `.env`.
 
 ```
-LOG_SQL_ENABLED=true
+LOG_QUERY_ENABLED=true
 LOG_REQUEST_ENABLED=true
 LOG_RESPONSE_ENABLED=true
 ```
