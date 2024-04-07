@@ -7,6 +7,7 @@ declare(strict_types=1);
 | Blink Logger
 |--------------------------------------------------------------------------
 */
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -18,6 +19,12 @@ return [
         'enabled' => env('LOG_QUERY_ENABLED', false),
         'channel' => config('logging.default'),
         'slow_query_time' => env('LOG_SQL_SLOW_QUERY_TIME', 2000), // ms
+        'listeners' => [
+            \Illuminate\Database\Events\QueryExecuted::class => \LaravelBlinkLogger\Listeners\QueryExecutedLogger::class,
+            \Illuminate\Database\Events\TransactionBeginning::class => \LaravelBlinkLogger\Listeners\TransactionBeginningLogger::class,
+            \Illuminate\Database\Events\TransactionCommitted::class => \LaravelBlinkLogger\Listeners\TransactionCommittedLogger::class,
+            \Illuminate\Database\Events\TransactionRolledBack::class => \LaravelBlinkLogger\Listeners\TransactionRolledBackLogger::class,
+        ],
     ],
 
     'http' => [
@@ -64,6 +71,9 @@ return [
         'request' => [
             'enabled' => env('LOG_HTTP_CLIENT_REQUEST_ENABLED', false),
             'channel' => config('logging.default'),
+            'listeners' => [
+                \Illuminate\Http\Client\Events\RequestSending::class => \LaravelBlinkLogger\Listeners\RequestSendingLogger::class,
+            ],
         ],
 
         /*
@@ -74,6 +84,9 @@ return [
         'response' => [
             'enabled' => env('LOG_HTTP_CLIENT_RESPONSE_ENABLED', false),
             'channel' => config('logging.default'),
+            'listeners' => [
+                \Illuminate\Http\Client\Events\RequestSending::class => \LaravelBlinkLogger\Listeners\RequestSendingLogger::class,
+            ],
         ],
     ],
 ];

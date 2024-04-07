@@ -6,20 +6,8 @@ namespace LaravelBlinkLogger\Providers;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Database\Events\QueryExecuted;
-use Illuminate\Database\Events\TransactionBeginning;
-use Illuminate\Database\Events\TransactionCommitted;
-use Illuminate\Database\Events\TransactionRolledBack;
-use Illuminate\Http\Client\Events\RequestSending;
-use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
-use LaravelBlinkLogger\Listeners\QueryExecutedLogger;
-use LaravelBlinkLogger\Listeners\RequestSendingLogger;
-use LaravelBlinkLogger\Listeners\ResponseReceivedLogger;
-use LaravelBlinkLogger\Listeners\TransactionBeginningLogger;
-use LaravelBlinkLogger\Listeners\TransactionCommittedLogger;
-use LaravelBlinkLogger\Listeners\TransactionRolledBackLogger;
 
 class LaravelBlinkLoggerServiceProvider extends ServiceProvider
 {
@@ -31,10 +19,9 @@ class LaravelBlinkLoggerServiceProvider extends ServiceProvider
 
         // Query Logger
         if ($config->get('blink-logger.query.enabled')) {
-            $events->listen(QueryExecuted::class, QueryExecutedLogger::class);
-            $events->listen(TransactionBeginning::class, TransactionBeginningLogger::class);
-            $events->listen(TransactionCommitted::class, TransactionCommittedLogger::class);
-            $events->listen(TransactionRolledBack::class, TransactionRolledBackLogger::class);
+            foreach ($config->get('blink-logger.query.listeners') as $event => $listener) {
+                $events->listen($event, $listener);
+            }
         }
 
         // HTTP Request Logger
@@ -57,12 +44,16 @@ class LaravelBlinkLoggerServiceProvider extends ServiceProvider
 
         // HTTP Client Request Logger
         if ($config->get('blink-logger.http_client.request.enabled')) {
-            $events->listen(RequestSending::class, RequestSendingLogger::class);
+            foreach ($config->get('blink-logger.http_client.request.listeners') as $event => $listener) {
+                $events->listen($event, $listener);
+            }
         }
 
         // HTTP Client Response Logger
         if ($config->get('blink-logger.http_client.response.enabled')) {
-            $events->listen(ResponseReceived::class, ResponseReceivedLogger::class);
+            foreach ($config->get('blink-logger.http_client.response.listeners') as $event => $listener) {
+                $events->listen($event, $listener);
+            }
         }
     }
 
