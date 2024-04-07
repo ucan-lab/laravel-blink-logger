@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace LaravelBlinkLogger\Listeners;
 
-use Carbon\CarbonInterface;
-use DateTimeInterface;
 use Illuminate\Config\Repository;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Log\LogManager;
@@ -24,29 +22,14 @@ class QueryExecutedLogger
 
     public function handle(QueryExecuted $event): void
     {
-        $sql = $event->sql;
+        $sql = $event->connection
+            ->getQueryGrammar()
+            ->substituteBindingsIntoRawSql(
+                sql: $event->sql,
+                bindings: $event->connection->prepareBindings($event->bindings),
+            );
 
-        foreach ($event->bindings as $binding) {
-            if (is_string($binding)) {
-                $binding = "'{$binding}'";
-            } elseif (is_bool($binding)) {
-                $binding = $binding ? '1' : '0';
-            } elseif (is_int($binding)) {
-                $binding = (string) $binding;
-            } elseif (is_float($binding)) {
-                $binding = (string) $binding;
-            } elseif ($binding === null) {
-                $binding = 'NULL';
-            } elseif ($binding instanceof CarbonInterface) {
-                $binding = "'{$binding->toDateTimeString()}'";
-            } elseif ($binding instanceof DateTimeInterface) {
-                $binding = "'{$binding->format('Y-m-d H:i:s')}'";
-            }
-
-            $sql = preg_replace('/\\?/', $binding, $sql, 1);
-        }
-
-        if ($event->time > $this->config->get('blink-logger.query.slow_query_time')) {
+        if ($event->time > config('blink-logger.query.slow_query_time')) {
             $this->logger->channel($this->config->get('blink-logger.query.channel'))->warning(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
         } else {
             $this->logger->channel($this->config->get('blink-logger.query.channel'))->debug(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
