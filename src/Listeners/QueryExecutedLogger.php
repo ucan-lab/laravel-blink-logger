@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace LaravelBlinkLogger\Listeners;
 
-use Carbon\Carbon;
-use DateTime;
+use Carbon\CarbonInterface;
+use DateTimeInterface;
 use Illuminate\Config\Repository;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Log\LogManager;
@@ -37,9 +37,9 @@ class QueryExecutedLogger
                 $binding = (string) $binding;
             } elseif ($binding === null) {
                 $binding = 'NULL';
-            } elseif ($binding instanceof Carbon) {
+            } elseif ($binding instanceof CarbonInterface) {
                 $binding = "'{$binding->toDateTimeString()}'";
-            } elseif ($binding instanceof DateTime) {
+            } elseif ($binding instanceof DateTimeInterface) {
                 $binding = "'{$binding->format('Y-m-d H:i:s')}'";
             }
 
