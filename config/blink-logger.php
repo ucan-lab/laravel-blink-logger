@@ -27,7 +27,7 @@ return [
         |--------------------------------------------------------------------------
         */
         'request' => [
-            'enabled' => env('LOG_REQUEST_ENABLED', false),
+            'enabled' => env('LOG_HTTP_REQUEST_ENABLED', false),
             'channel' => config('logging.default'),
             'include_paths' => [],
             'exclude_paths' => [],
@@ -44,7 +44,7 @@ return [
         |--------------------------------------------------------------------------
         */
         'response' => [
-            'enabled' => env('LOG_RESPONSE_ENABLED', false),
+            'enabled' => env('LOG_HTTP_RESPONSE_ENABLED', false),
             'channel' => config('logging.default'),
             'include_paths' => [],
             'exclude_paths' => [],
@@ -52,6 +52,28 @@ return [
             'middleware_group_names' => [
                 'api',
             ],
+        ],
+    ],
+
+    'http_client' => [
+        /*
+        |--------------------------------------------------------------------------
+        | Request Logger
+        |--------------------------------------------------------------------------
+        */
+        'request' => [
+            'enabled' => env('LOG_HTTP_CLIENT_REQUEST_ENABLED', false),
+            'channel' => config('logging.default'),
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Response Logger
+        |--------------------------------------------------------------------------
+        */
+        'response' => [
+            'enabled' => env('LOG_HTTP_CLIENT_RESPONSE_ENABLED', false),
+            'channel' => config('logging.default'),
         ],
     ],
 ];

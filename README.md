@@ -14,8 +14,10 @@ Debug log output is disabled by default, so please enable it in `.env`.
 
 ```
 LOG_QUERY_ENABLED=true
-LOG_REQUEST_ENABLED=true
-LOG_RESPONSE_ENABLED=true
+LOG_HTTP_REQUEST_ENABLED=true
+LOG_HTTP_RESPONSE_ENABLED=true
+LOG_HTTP_CLIENT_REQUEST_ENABLED=true
+LOG_HTTP_CLIENT_RESPONSE_ENABLED=true
 ```
 
 ### Option config file publish
