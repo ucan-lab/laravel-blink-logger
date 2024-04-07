@@ -10,7 +10,6 @@ use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Database\Events\TransactionCommitted;
 use Illuminate\Database\Events\TransactionRolledBack;
-use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use LaravelBlinkLogger\Listeners\QueryExecutedLogger;
@@ -20,7 +19,7 @@ use LaravelBlinkLogger\Listeners\TransactionRolledBackLogger;
 
 class LaravelBlinkLoggerServiceProvider extends ServiceProvider
 {
-    public function boot(Repository $config, Dispatcher $events, Router $router, Kernel $kernel): void
+    public function boot(Repository $config, Dispatcher $events, Router $router): void
     {
         $this->publishes([
             __DIR__ . '/../../config/blink-logger.php' => config_path('blink-logger.php'),
