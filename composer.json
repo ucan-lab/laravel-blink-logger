@@ -1,6 +1,11 @@
 {
     "name": "ucan-lab/laravel-blink-logger",
     "description": "Comprehensive Logging Tool for Laravel.",
+    "keywords": [
+        "php",
+        "laravel",
+        "logger"
+    ],
     "type": "library",
     "license": "MIT",
     "autoload": {
