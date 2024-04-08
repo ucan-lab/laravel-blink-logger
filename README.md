@@ -1,5 +1,11 @@
 # Laravel Blink Logger
 
+[![PHP Version Require](https://poser.pugx.org/ucan-lab/laravel-blink-logger/require/php)](https://packagist.org/packages/ucan-lab/laravel-blink-logger)
+[![Latest Stable Version](https://poser.pugx.org/ucan-lab/laravel-blink-logger/v)](https://packagist.org/packages/ucan-lab/laravel-blink-logger)
+[![Total Downloads](https://poser.pugx.org/ucan-lab/laravel-blink-logger/downloads)](https://packagist.org/packages/ucan-lab/laravel-blink-logger)
+[![Monthly Downloads](https://poser.pugx.org/ucan-lab/laravel-blink-logger/d/monthly)](https://packagist.org/packages/ucan-lab/laravel-blink-logger)
+[![License](https://poser.pugx.org/ucan-lab/laravel-blink-logger/license)](https://packagist.org/packages/ucan-lab/laravel-blink-logger)
+
 Comprehensive Logging Tool for Laravel.
 
 ## Installation
