@@ -1,3 +1,5 @@
+![Laravel Blink Logger](lbl_social.jpg)
+
 # Laravel Blink Logger
 
 [![PHP Version Require](https://poser.pugx.org/ucan-lab/laravel-blink-logger/require/php)](https://packagist.org/packages/ucan-lab/laravel-blink-logger)
