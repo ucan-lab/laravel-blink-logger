@@ -21,7 +21,7 @@
     ],
     "require": {
         "php": "^8.1",
-        "laravel/framework": "^10.15|^11.0"
+        "laravel/framework": "12.54.1"
     },
     "config": {
         "optimize-autoloader": true,
