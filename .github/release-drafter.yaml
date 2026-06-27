@@ -22,6 +22,28 @@ version-resolver:
     labels:
       - 'minor'
   default: patch
+autolabeler:
+  - label: 'bug'
+    branch:
+      - '/^fix\/.+/'
+    title:
+      - '/^fix(\(.+\))?:/i'
+  - label: 'enhancement'
+    branch:
+      - '/^feat\/.+/'
+      - '/^feature\/.+/'
+    title:
+      - '/^feat(\(.+\))?:/i'
+  - label: 'documentation'
+    branch:
+      - '/^docs\/.+/'
+    title:
+      - '/^docs(\(.+\))?:/i'
+    files:
+      - '**/*.md'
+  - label: 'dependencies'
+    title:
+      - '/^chore\(deps\)/i'
 template: |
   $CHANGES
 footer: |
