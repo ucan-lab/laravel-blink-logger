@@ -68,8 +68,8 @@ Each logger is independently toggleable via `LOG_*_ENABLED` environment variable
 - **Static analysis:** Must pass `composer analyse` (PHPStan / Larastan) with no new errors.
 - **Tests:** Written with Pest. New behavior requires tests; coverage must stay at 80%+.
 - **Immutability:** Prefer creating new values over mutating existing objects/arrays.
-- **Supported versions:** PHP `^8.2`, Laravel `^11.0 | ^12.0 | ^13.0`. The CI matrix tests
-  PHP 8.2–8.4 against Laravel 12/13 with both lowest and stable dependency resolutions, so
+- **Supported versions:** PHP `^8.3`, Laravel `^12.0 | ^13.0`. The CI matrix tests
+  PHP 8.3–8.4 against Laravel 12/13 with both lowest and stable dependency resolutions, so
   avoid APIs unavailable in the lowest supported versions.
 
 ## Security

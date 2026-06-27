@@ -16,11 +16,11 @@ Comprehensive Logging Tool for Laravel.
 
 | Package    | Version            |
 |------------|--------------------|
-| PHP        | ^8.2               |
-| Laravel    | ^11.0 / ^12.0 / ^13.0 |
+| PHP        | ^8.3               |
+| Laravel    | ^12.0 / ^13.0      |
 
 > [!NOTE]
-> Laravel 10 is no longer supported. All Laravel 10.x releases are flagged by security advisories and can no longer be installed, so support was dropped. If you are on Laravel 10, please upgrade to Laravel 11 or newer before installing this package.
+> Laravel 11 and PHP 8.2 are no longer supported as of this major release. Their security-support windows have ended, so the package now targets PHP 8.3+ and Laravel 12 or newer. If you are on Laravel 11 or PHP 8.2, please upgrade before installing this version, or stay on the previous major line.
 
 ## Installation
 

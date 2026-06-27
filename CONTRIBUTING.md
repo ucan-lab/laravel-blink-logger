@@ -20,8 +20,8 @@ Clear, simple English is preferred so that non-native speakers can follow along.
 
 | Package | Version                |
 |---------|------------------------|
-| PHP     | `^8.2`                 |
-| Laravel | `^11.0 / ^12.0 / ^13.0` |
+| PHP     | `^8.3`                 |
+| Laravel | `^12.0 / ^13.0`        |
 
 Dependencies are managed with [Composer](https://getcomposer.org/).
 
@@ -102,7 +102,7 @@ docs: clarify query binding redaction warning
    - A reference to any related issue (e.g. `Closes #123`).
 4. Keep pull requests focused — one logical change per PR is easier to review.
 
-CI runs Pint, PHPStan, Composer audit, and the test matrix (PHP 8.2–8.4 against Laravel
+CI runs Pint, PHPStan, Composer audit, and the test matrix (PHP 8.3–8.4 against Laravel
 12/13, with both `prefer-lowest` and `prefer-stable` resolutions). All checks must be green
 before a PR can be merged.
 
