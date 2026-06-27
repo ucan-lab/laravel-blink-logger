@@ -6,10 +6,12 @@ use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Database\Events\TransactionCommitted;
 use Illuminate\Database\Events\TransactionRolledBack;
 use Illuminate\Http\Client\Events\RequestSending;
+use Illuminate\Http\Client\Events\ResponseReceived;
 use LaravelBlinkLogger\Http\Middleware\RequestLogger;
 use LaravelBlinkLogger\Http\Middleware\ResponseLogger;
 use LaravelBlinkLogger\Listeners\QueryExecutedLogger;
 use LaravelBlinkLogger\Listeners\RequestSendingLogger;
+use LaravelBlinkLogger\Listeners\ResponseReceivedLogger;
 use LaravelBlinkLogger\Listeners\TransactionBeginningLogger;
 use LaravelBlinkLogger\Listeners\TransactionCommittedLogger;
 use LaravelBlinkLogger\Listeners\TransactionRolledBackLogger;
@@ -97,7 +99,7 @@ return [
             'enabled' => env('LOG_HTTP_CLIENT_RESPONSE_ENABLED', false),
             'channel' => config('logging.default'),
             'listeners' => [
-                RequestSending::class => RequestSendingLogger::class,
+                ResponseReceived::class => ResponseReceivedLogger::class,
             ],
         ],
     ],
