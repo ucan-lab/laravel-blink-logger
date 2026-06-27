@@ -80,6 +80,40 @@ it('logs non-JSON response using body() when Content-Type is not application/jso
     $listener->handle($event);
 });
 
+it('logs JSON response using json() body when content-type header is lowercase', function (): void {
+    $psrRequest = new GuzzlePsrRequest('GET', 'https://api.example.com/data');
+    $psrResponse = new GuzzlePsrResponse(
+        200,
+        ['content-type' => 'application/json'],
+        json_encode(['result' => 'ok'])
+    );
+    $event = new ResponseReceived(new ClientRequest($psrRequest), new ClientResponse($psrResponse));
+
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldReceive('debug')
+        ->once()
+        ->with(
+            '200 OK',
+            Mockery::on(function (array $context): bool {
+                return $context['body'] === ['result' => 'ok'];
+            })
+        );
+
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldReceive('channel')->with('stack')->andReturn($channel);
+
+    $config = new Repository([
+        'blink-logger' => [
+            'http_client' => [
+                'response' => ['channel' => 'stack'],
+            ],
+        ],
+    ]);
+
+    $listener = new ResponseReceivedLogger($logger, $config);
+    $listener->handle($event);
+});
+
 it('includes status code and reason phrase in log message', function (): void {
     $psrRequest = new GuzzlePsrRequest('GET', 'https://api.example.com/missing');
     $psrResponse = new GuzzlePsrResponse(404, ['Content-Type' => 'text/plain'], 'Not Found');
