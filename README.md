@@ -8,6 +8,8 @@
 [![Monthly Downloads](https://poser.pugx.org/ucan-lab/laravel-blink-logger/d/monthly)](https://packagist.org/packages/ucan-lab/laravel-blink-logger)
 [![License](https://poser.pugx.org/ucan-lab/laravel-blink-logger/license)](https://packagist.org/packages/ucan-lab/laravel-blink-logger)
 
+English | [日本語](README.ja.md)
+
 Comprehensive Logging Tool for Laravel.
 
 ## Requirements
