@@ -44,6 +44,11 @@ autolabeler:
   - label: 'dependencies'
     title:
       - '/^chore\(deps\)/i'
+  - label: 'major'
+    title:
+      - '/^\w+(\([^)]+\))?!:/'
+    body:
+      - '/BREAKING[- ]CHANGE/i'
 template: |
   $CHANGES
 footer: |
