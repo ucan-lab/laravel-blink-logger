@@ -173,3 +173,12 @@ it('registers http_client response listeners when http_client.response.enabled i
     $provider = new LaravelBlinkLoggerServiceProvider($this->app);
     $provider->boot($config, $events, $router);
 });
+
+it('maps ResponseReceived to ResponseReceivedLogger in the real http_client.response config', function (): void {
+    $listeners = config('blink-logger.http_client.response.listeners');
+
+    expect($listeners)
+        ->toBeArray()
+        ->toHaveKey(ResponseReceived::class)
+        ->and($listeners[ResponseReceived::class])->toBe(ResponseReceivedLogger::class);
+});
