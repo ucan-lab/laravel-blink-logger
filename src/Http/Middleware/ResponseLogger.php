@@ -20,8 +20,7 @@ class ResponseLogger
     public function __construct(
         private Repository $config,
         private LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     public function handle(Request $request, Closure $next)
     {
