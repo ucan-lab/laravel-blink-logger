@@ -17,7 +17,7 @@ be required as a dev dependency by Laravel applications.
 This is an open-source project intended to be approachable for an international audience.
 **Always write the following in English:**
 
-- Source code comments and documentation
+- Source code comments and documentation (localized files like `README.ja.md` are exempt)
 - Commit messages
 - GitHub issues and pull request titles/descriptions
 - Code identifiers (class, method, variable names)

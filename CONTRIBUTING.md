@@ -9,7 +9,7 @@ requests, documentation improvements, and pull requests.
 This is an open-source project with an international audience. Please write **all** of the
 following in **English**:
 
-- Code comments and documentation
+- Code comments and documentation (localized files like `README.ja.md` are exempt)
 - Commit messages
 - Issue titles and descriptions
 - Pull request titles and descriptions
