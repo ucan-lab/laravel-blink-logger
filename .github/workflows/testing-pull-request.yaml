@@ -33,6 +33,21 @@ jobs:
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist
       - name: PHPStan
         run: ./vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist
+      - name: Composer Audit
+        run: composer audit
   test:
     name: test (PHP ${{ matrix.combo.php }}, Laravel ${{ matrix.combo.laravel }}, ${{ matrix.stability }})
     runs-on: ubuntu-latest
