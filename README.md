@@ -65,8 +65,8 @@ After publishing the config file, you can configure the following options in `co
 |-----|---------|--------------|-------------|
 | `http.request.enabled` | `false` | `LOG_HTTP_REQUEST_ENABLED` | Enable or disable incoming HTTP request logging. |
 | `http.request.channel` | `config('logging.default')` | — | Log channel to write HTTP request logs to. |
-| `http.request.include_paths` | `[]` | — | If non-empty, only requests whose path exactly matches one of these values are logged. Takes precedence over `exclude_paths`. |
-| `http.request.exclude_paths` | `[]` | — | When `include_paths` is empty, requests whose path exactly matches any of these values are skipped. Has no effect when `include_paths` is non-empty. |
+| `http.request.include_paths` | `[]` | — | If non-empty, only requests whose path matches one of these values are logged (supports `*` wildcard patterns via Laravel's `Request::is()`, e.g. `api/*`; exact strings also match). Takes precedence over `exclude_paths`. |
+| `http.request.exclude_paths` | `[]` | — | When `include_paths` is empty, requests whose path matches any of these values are skipped (supports `*` wildcard patterns via Laravel's `Request::is()`, e.g. `admin/*`; exact strings also match). Has no effect when `include_paths` is non-empty. |
 | `http.request.middleware_group_names` | `['web', 'api']` | — | Middleware groups the request logger middleware is registered to. |
 
 ### HTTP Response Logger (`http.response`)
@@ -75,8 +75,8 @@ After publishing the config file, you can configure the following options in `co
 |-----|---------|--------------|-------------|
 | `http.response.enabled` | `false` | `LOG_HTTP_RESPONSE_ENABLED` | Enable or disable incoming HTTP response logging. |
 | `http.response.channel` | `config('logging.default')` | — | Log channel to write HTTP response logs to. |
-| `http.response.include_paths` | `[]` | — | If non-empty, only responses whose path exactly matches one of these values are logged. Takes precedence over `exclude_paths`. |
-| `http.response.exclude_paths` | `[]` | — | When `include_paths` is empty, responses whose path exactly matches any of these values are skipped. Has no effect when `include_paths` is non-empty. |
+| `http.response.include_paths` | `[]` | — | If non-empty, only responses whose path matches one of these values are logged (supports `*` wildcard patterns via Laravel's `Request::is()`, e.g. `api/*`; exact strings also match). Takes precedence over `exclude_paths`. |
+| `http.response.exclude_paths` | `[]` | — | When `include_paths` is empty, responses whose path matches any of these values are skipped (supports `*` wildcard patterns via Laravel's `Request::is()`, e.g. `admin/*`; exact strings also match). Has no effect when `include_paths` is non-empty. |
 | `http.response.middleware_group_names` | `['api']` | — | Middleware groups the response logger middleware is registered to. |
 
 ### HTTP Client Request Logger (`http_client.request`)

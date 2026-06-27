@@ -92,6 +92,51 @@ it('logs request when both include_paths and exclude_paths are empty', function 
     $middleware->handle($request, fn ($r) => response('ok'));
 });
 
+it('logs request when path matches include_paths wildcard', function (): void {
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldReceive('debug')->once();
+
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldReceive('channel')->andReturn($channel);
+
+    $config = Mockery::mock(Repository::class);
+    $config->shouldReceive('get')->with('blink-logger.http.request.include_paths')->andReturn(['api/*']);
+    $config->shouldReceive('get')->with('blink-logger.http.request.channel')->andReturn('stack');
+
+    $request = Request::create('/api/users', 'GET');
+    $middleware = makeRequestLogger($config, $logger);
+    $middleware->handle($request, fn ($r) => response('ok'));
+});
+
+it('does not log request when path does not match include_paths wildcard', function (): void {
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldNotReceive('debug');
+
+    $logger = Mockery::mock(LogManager::class);
+
+    $config = Mockery::mock(Repository::class);
+    $config->shouldReceive('get')->with('blink-logger.http.request.include_paths')->andReturn(['api/*']);
+
+    $request = Request::create('/admin/dashboard', 'GET');
+    $middleware = makeRequestLogger($config, $logger);
+    $middleware->handle($request, fn ($r) => response('ok'));
+});
+
+it('does not log request when path matches exclude_paths wildcard', function (): void {
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldNotReceive('debug');
+
+    $logger = Mockery::mock(LogManager::class);
+
+    $config = Mockery::mock(Repository::class);
+    $config->shouldReceive('get')->with('blink-logger.http.request.include_paths')->andReturn([]);
+    $config->shouldReceive('get')->with('blink-logger.http.request.exclude_paths')->andReturn(['admin/*']);
+
+    $request = Request::create('/admin/dashboard', 'GET');
+    $middleware = makeRequestLogger($config, $logger);
+    $middleware->handle($request, fn ($r) => response('ok'));
+});
+
 it('include_paths takes priority over exclude_paths', function (): void {
     $channel = Mockery::mock(LoggerInterface::class);
     $channel->shouldReceive('debug')->once();
