@@ -1,0 +1,27 @@
+# Local development environment. Build with a different PHP version via:
+#   PHP_VERSION=8.4 docker compose build
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.3}
+    image: laravel-blink-logger:php${PHP_VERSION:-8.3}
+    working_dir: /app
+    volumes:
+      - .:/app
+      # Keep vendor/ inside the container so host (Herd) and Docker resolve
+      # dependencies independently for their own PHP version.
+      - composer-vendor:/app/vendor
+      - composer-cache:/tmp/composer-cache
+    environment:
+      COMPOSER_CACHE_DIR: /tmp/composer-cache
+
+volumes:
+  # Per-PHP-version vendor volume, so switching PHP_VERSION never reuses
+  # dependencies resolved for a different PHP version.
+  composer-vendor:
+    name: laravel-blink-logger-vendor-${PHP_VERSION:-8.3}
+  composer-cache:
+    name: laravel-blink-logger-composer-cache

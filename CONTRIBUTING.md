@@ -64,6 +64,31 @@ To auto-fix code style, run:
   ./vendor/bin/pest --coverage --min=80
   ```
 
+### Using Docker (optional)
+
+If you prefer not to install PHP locally, a Docker setup is provided. It ships PHP with
+the `pcov` coverage driver, so coverage works out of the box. Run any task through the
+`make` shortcuts:
+
+```bash
+make build       # Build the image (defaults to PHP 8.3)
+make install     # Install dependencies (composer update)
+make test        # Run the test suite
+make coverage    # Run tests with the 80% coverage gate
+make ci          # Run all checks: pint, phpstan, audit, coverage, validate
+make shell       # Open a shell in the container
+```
+
+Build and test against a specific supported PHP version with `PHP_VERSION`:
+
+```bash
+make PHP_VERSION=8.4 build install test
+```
+
+Dependencies live in a per-version volume inside the container, so the host and Docker
+(and PHP 8.3 vs 8.4) never share a `vendor/`. After switching `PHP_VERSION`, run
+`make install` once to resolve dependencies for that version.
+
 ## Coding Standards
 
 - Code style is enforced by **Laravel Pint** — run it before committing.
