@@ -97,6 +97,13 @@ Dependencies live in a per-version volume inside the container, so the host and 
 > `vendor/` back to the host. Note that the host `vendor/` is then resolved for a single
 > PHP version, so re-run `make install` after switching `PHP_VERSION`.
 
+> [!NOTE]
+> The container runs as `root`, so on **Linux** any file written back to the bind-mounted
+> project (for example, source files reformatted by `make pint`) is owned by `root` on the
+> host. If that is inconvenient, run the container as your host user by adding
+> `user: "${UID}:${GID}"` to the `app` service in `docker-compose.yml`. On macOS this is a
+> non-issue because Docker Desktop maps file ownership for you.
+
 ## Coding Standards
 
 - Code style is enforced by **Laravel Pint** — run it before committing.
