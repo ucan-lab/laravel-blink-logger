@@ -9,17 +9,42 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist
       - name: Laravel Pint Dry Run
         run: ./vendor/bin/pint -v --test
   test:
+    name: test (PHP ${{ matrix.combo.php }}, Laravel ${{ matrix.combo.laravel }}, ${{ matrix.stability }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        stability: [prefer-lowest, prefer-stable]
+        combo:
+          - { php: '8.2', laravel: '^12.0', testbench: '^10.0' }
+          - { php: '8.3', laravel: '^12.0', testbench: '^10.0' }
+          - { php: '8.4', laravel: '^12.0', testbench: '^10.0' }
+          - { php: '8.3', laravel: '^13.0', testbench: '^11.0' }
+          - { php: '8.4', laravel: '^13.0', testbench: '^11.0' }
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.combo.php }}
+          coverage: none
+      - name: Select Laravel and Testbench versions
+        run: |
+          composer require "laravel/framework:${{ matrix.combo.laravel }}" --no-interaction --no-update
+          composer require "orchestra/testbench:${{ matrix.combo.testbench }}" --dev --no-interaction --no-update
       - name: Install Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist
+        run: composer update --${{ matrix.stability }} --prefer-dist --no-ansi --no-interaction --no-progress
       - name: Run Tests
         run: ./vendor/bin/pest
