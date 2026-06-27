@@ -89,6 +89,14 @@ Dependencies live in a per-version volume inside the container, so the host and 
 (and PHP 8.3 vs 8.4) never share a `vendor/`. After switching `PHP_VERSION`, run
 `make install` once to resolve dependencies for that version.
 
+> [!NOTE]
+> Because `vendor/` is kept in a container volume, it is **not** written to the host, so a
+> host IDE cannot index the installed packages (no autocompletion / go-to-definition for
+> dependencies). If you want IDE support on the host, comment out the
+> `composer-vendor:/app/vendor` mount in `docker-compose.yml` so `make install` writes
+> `vendor/` back to the host. Note that the host `vendor/` is then resolved for a single
+> PHP version, so re-run `make install` after switching `PHP_VERSION`.
+
 ## Coding Standards
 
 - Code style is enforced by **Laravel Pint** — run it before committing.

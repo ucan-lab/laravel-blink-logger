@@ -5,8 +5,11 @@ ARG PHP_VERSION=8.3
 FROM php:${PHP_VERSION}-cli
 
 # System packages needed to build PHP extensions and run Composer.
+# $PHPIZE_DEPS (provided by the official PHP image) bundles the compiler
+# toolchain required by pecl/docker-php-ext-install.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        $PHPIZE_DEPS \
         git \
         unzip \
         libzip-dev \
