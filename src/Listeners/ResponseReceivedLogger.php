@@ -35,6 +35,6 @@ class ResponseReceivedLogger
 
     private function isJson(Response $response): bool
     {
-        return Str::startsWith($response->headers()['Content-Type'][0] ?? '', 'application/json');
+        return Str::startsWith($response->header('Content-Type'), 'application/json');
     }
 }
