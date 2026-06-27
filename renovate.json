@@ -3,5 +3,11 @@
   "labels": ["dependencies"],
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["laravel/framework"],
+      "rangeStrategy": "widen"
+    }
   ]
 }
