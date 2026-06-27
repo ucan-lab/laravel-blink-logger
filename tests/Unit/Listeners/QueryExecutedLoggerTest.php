@@ -8,10 +8,6 @@ use Illuminate\Log\LogManager;
 use LaravelBlinkLogger\Listeners\QueryExecutedLogger;
 use Psr\Log\LoggerInterface;
 
-beforeEach(function (): void {
-    config()->set('blink-logger.query.slow_query_time', 100);
-});
-
 it('logs query as debug when execution time is below slow_query_time', function (): void {
     $connection = $this->app['db']->connection();
     $event = new QueryExecuted('select 1', [], 50.0, $connection);
@@ -24,7 +20,7 @@ it('logs query as debug when execution time is below slow_query_time', function 
     $logger = Mockery::mock(LogManager::class);
     $logger->shouldReceive('channel')->with('stack')->andReturn($channel);
 
-    $config = new Repository(['blink-logger' => ['query' => ['channel' => 'stack']]]);
+    $config = new Repository(['blink-logger' => ['query' => ['channel' => 'stack', 'slow_query_time' => 100]]]);
 
     $listener = new QueryExecutedLogger($logger, $config);
     $listener->handle($event);
@@ -42,7 +38,7 @@ it('logs query as warning when execution time exceeds slow_query_time', function
     $logger = Mockery::mock(LogManager::class);
     $logger->shouldReceive('channel')->with('stack')->andReturn($channel);
 
-    $config = new Repository(['blink-logger' => ['query' => ['channel' => 'stack']]]);
+    $config = new Repository(['blink-logger' => ['query' => ['channel' => 'stack', 'slow_query_time' => 100]]]);
 
     $listener = new QueryExecutedLogger($logger, $config);
     $listener->handle($event);
@@ -60,7 +56,7 @@ it('expands SQL bindings into the logged message', function (): void {
     $logger = Mockery::mock(LogManager::class);
     $logger->shouldReceive('channel')->with('stack')->andReturn($channel);
 
-    $config = new Repository(['blink-logger' => ['query' => ['channel' => 'stack']]]);
+    $config = new Repository(['blink-logger' => ['query' => ['channel' => 'stack', 'slow_query_time' => 100]]]);
 
     $listener = new QueryExecutedLogger($logger, $config);
     $listener->handle($event);
