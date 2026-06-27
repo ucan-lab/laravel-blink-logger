@@ -46,9 +46,9 @@ autolabeler:
       - '/^chore\(deps\)/i'
   - label: 'major'
     title:
-      - '/^\w+(\(.+\))?!:/'
+      - '/^\w+(\([^)]+\))?!:/'
     body:
-      - '/BREAKING CHANGE/'
+      - '/BREAKING[- ]CHANGE/i'
 template: |
   $CHANGES
 footer: |
