@@ -3,3 +3,4 @@
 vendor
 composer.lock
 pint.json
+.phpunit.result.cache
