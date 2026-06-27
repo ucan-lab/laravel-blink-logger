@@ -39,12 +39,12 @@ class ResponseLogger
     {
         $includePaths = $this->config->get('blink-logger.http.response.include_paths');
         if (count($includePaths) > 0) {
-            return in_array($request->path(), $includePaths, true);
+            return $request->is(...$includePaths);
         }
 
         $excludePaths = $this->config->get('blink-logger.http.response.exclude_paths');
         if (count($excludePaths) > 0) {
-            return ! in_array($request->path(), $excludePaths, true);
+            return ! $request->is(...$excludePaths);
         }
 
         return true;

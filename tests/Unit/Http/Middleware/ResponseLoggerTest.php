@@ -101,6 +101,53 @@ it('logs response when both include_paths and exclude_paths are empty', function
     $middleware->terminate($request, $response);
 });
 
+it('logs response when path matches include_paths wildcard', function (): void {
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldReceive('debug')->once();
+
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldReceive('channel')->andReturn($channel);
+
+    $config = Mockery::mock(Repository::class);
+    $config->shouldReceive('get')->with('blink-logger.http.response.include_paths')->andReturn(['api/*']);
+    $config->shouldReceive('get')->with('blink-logger.http.response.channel')->andReturn('stack');
+
+    $request = Request::create('/api/users', 'GET');
+    $response = new Response('{"ok":true}', 200);
+
+    $middleware = makeResponseLogger($config, $logger);
+    $middleware->terminate($request, $response);
+});
+
+it('does not log response when path does not match include_paths wildcard', function (): void {
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldNotReceive('channel');
+
+    $config = Mockery::mock(Repository::class);
+    $config->shouldReceive('get')->with('blink-logger.http.response.include_paths')->andReturn(['api/*']);
+
+    $request = Request::create('/admin/dashboard', 'GET');
+    $response = new Response('ok', 200);
+
+    $middleware = makeResponseLogger($config, $logger);
+    $middleware->terminate($request, $response);
+});
+
+it('does not log response when path matches exclude_paths wildcard', function (): void {
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldNotReceive('channel');
+
+    $config = Mockery::mock(Repository::class);
+    $config->shouldReceive('get')->with('blink-logger.http.response.include_paths')->andReturn([]);
+    $config->shouldReceive('get')->with('blink-logger.http.response.exclude_paths')->andReturn(['admin/*']);
+
+    $request = Request::create('/admin/dashboard', 'GET');
+    $response = new Response('ok', 200);
+
+    $middleware = makeResponseLogger($config, $logger);
+    $middleware->terminate($request, $response);
+});
+
 it('writes status code and status text in the log message', function (): void {
     $channel = Mockery::mock(LoggerInterface::class);
     $channel->shouldReceive('debug')
