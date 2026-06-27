@@ -3,11 +3,15 @@ tag-template: 'v$RESOLVED_VERSION'
 categories:
   - title: '🚀 Features'
     labels:
+      - 'enhancement'
       - 'feature'
   - title: '🐛 Bug Fixes'
     labels:
       - 'bug'
-  - title: '📝 Other Changes'
+  - title: '📝 Documentation'
+    labels:
+      - 'documentation'
+  - title: '📦 Other Changes'
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 change-title-escapes: '\<*_&'
 version-resolver:
