@@ -21,12 +21,16 @@ class QueryExecutedLogger
 
     public function handle(QueryExecuted $event): void
     {
-        $sql = $event->connection
-            ->getQueryGrammar()
-            ->substituteBindingsIntoRawSql(
-                sql: $event->sql,
-                bindings: $event->connection->prepareBindings($event->bindings),
-            );
+        $redactBindings = (bool) $this->config->get('blink-logger.query.redact_bindings', false);
+
+        $sql = $redactBindings
+            ? $event->sql
+            : $event->connection
+                ->getQueryGrammar()
+                ->substituteBindingsIntoRawSql(
+                    sql: $event->sql,
+                    bindings: $event->connection->prepareBindings($event->bindings),
+                );
 
         if ($event->time > $this->config->get('blink-logger.query.slow_query_time')) {
             $this->logger->channel($this->config->get('blink-logger.query.channel'))->warning(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));

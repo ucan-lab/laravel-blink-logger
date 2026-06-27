@@ -25,6 +25,25 @@ use LaravelBlinkLogger\Listeners\TransactionRolledBackLogger;
 return [
     /*
     |--------------------------------------------------------------------------
+    | Redaction
+    |--------------------------------------------------------------------------
+    */
+
+    'redact' => [
+        'placeholder' => '***',
+        'headers' => [
+            'authorization', 'cookie', 'set-cookie', 'x-api-key', 'x-xsrf-token', 'proxy-authorization', 'php-auth-pw',
+            'x-auth-token', 'x-access-token',
+        ],
+        'body_keys' => [
+            'password', 'password_confirmation', 'current_password', 'new_password',
+            'token', 'access_token', 'refresh_token', 'secret', 'api_key', 'authorization', 'credit_card', 'card_number', 'cvv',
+            'client_secret', 'private_key', 'passphrase',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Query Logger
     |--------------------------------------------------------------------------
     */
@@ -33,6 +52,7 @@ return [
         'enabled' => env('LOG_QUERY_ENABLED', false),
         'channel' => config('logging.default'),
         'slow_query_time' => env('LOG_SQL_SLOW_QUERY_TIME', 2000), // ms
+        'redact_bindings' => env('LOG_SQL_REDACT_BINDINGS', false),
         'listeners' => [
             QueryExecuted::class => QueryExecutedLogger::class,
             TransactionBeginning::class => TransactionBeginningLogger::class,
