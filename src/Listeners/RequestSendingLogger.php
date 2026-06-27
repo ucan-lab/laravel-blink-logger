@@ -21,7 +21,7 @@ class RequestSendingLogger
 
     public function handle(RequestSending $event): void
     {
-        $this->logger->channel($this->config->get('blink-logger.http_client.response.channel'))->debug(sprintf(
+        $this->logger->channel($this->config->get('blink-logger.http_client.request.channel'))->debug(sprintf(
             '%s: %s',
             $event->request->method(),
             $event->request->url(),
