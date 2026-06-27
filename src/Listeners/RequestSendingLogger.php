@@ -7,6 +7,7 @@ namespace LaravelBlinkLogger\Listeners;
 use Illuminate\Config\Repository;
 use Illuminate\Http\Client\Events\RequestSending;
 use Illuminate\Log\LogManager;
+use LaravelBlinkLogger\Support\Redactor;
 use Psr\Log\LoggerInterface;
 
 class RequestSendingLogger
@@ -17,6 +18,7 @@ class RequestSendingLogger
     public function __construct(
         private LoggerInterface $logger,
         private Repository $config,
+        private Redactor $redactor,
     ) {}
 
     public function handle(RequestSending $event): void
@@ -26,8 +28,8 @@ class RequestSendingLogger
             $event->request->method(),
             $event->request->url(),
         ), [
-            'body' => $event->request->data(),
-            'headers' => $event->request->headers(),
+            'body' => $this->redactor->body($event->request->data()),
+            'headers' => $this->redactor->headers($event->request->headers()),
         ]);
     }
 }

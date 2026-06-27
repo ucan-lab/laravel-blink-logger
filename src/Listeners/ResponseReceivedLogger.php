@@ -9,6 +9,7 @@ use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Http\Client\Response;
 use Illuminate\Log\LogManager;
 use Illuminate\Support\Str;
+use LaravelBlinkLogger\Support\Redactor;
 use Psr\Log\LoggerInterface;
 
 class ResponseReceivedLogger
@@ -19,6 +20,7 @@ class ResponseReceivedLogger
     public function __construct(
         private LoggerInterface $logger,
         private Repository $config,
+        private Redactor $redactor,
     ) {}
 
     public function handle(ResponseReceived $event): void
@@ -28,8 +30,8 @@ class ResponseReceivedLogger
             $event->response->status(),
             $event->response->reason(),
         ), [
-            'body' => $this->isJson($event->response) ? $event->response->json() : $event->response->body(),
-            'headers' => $event->response->headers(),
+            'body' => $this->isJson($event->response) ? $this->redactor->body($event->response->json()) : $event->response->body(),
+            'headers' => $this->redactor->headers($event->response->headers()),
         ]);
     }
 

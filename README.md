@@ -50,6 +50,18 @@ $ php artisan vendor:publish --tag=blink-logger
 
 After publishing the config file, you can configure the following options in `config/blink-logger.php`.
 
+### Redaction (`redact`)
+
+Sensitive values are masked before they reach the log output. Redaction applies to all loggers (HTTP request/response, HTTP client request/response).
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `redact.placeholder` | `***` | String used to replace redacted values. |
+| `redact.headers` | See config | List of header names (case-insensitive) whose values are replaced by the placeholder. Defaults include `authorization`, `cookie`, `set-cookie`, `x-api-key`, `x-xsrf-token`, `proxy-authorization`, and `php-auth-pw`. |
+| `redact.body_keys` | See config | List of request/response body keys (case-insensitive, recursive) whose values are replaced by the placeholder. Defaults include `password`, `token`, `access_token`, `refresh_token`, `secret`, `api_key`, `authorization`, `credit_card`, `card_number`, and `cvv`. |
+
+To customize the redact lists, publish the config file and edit `config/blink-logger.php`.
+
 ### Query Logger (`query`)
 
 | Key | Default | Env Variable | Description |
@@ -57,6 +69,7 @@ After publishing the config file, you can configure the following options in `co
 | `query.enabled` | `false` | `LOG_QUERY_ENABLED` | Enable or disable query logging. |
 | `query.channel` | `config('logging.default')` | — | Log channel to write query logs to. |
 | `query.slow_query_time` | `2000` | `LOG_SQL_SLOW_QUERY_TIME` | Threshold in milliseconds. Queries that exceed this value are logged at `warning` level instead of `debug`. |
+| `query.redact_bindings` | `false` | `LOG_SQL_REDACT_BINDINGS` | When `true`, SQL bindings are **not** interpolated into the query string. The raw parameterized SQL (with `?` placeholders) is logged instead, preventing binding values from appearing in logs. Defaults to `false` to preserve existing behavior. |
 | `query.listeners` | See config | — | Map of database event classes to listener classes. Covers `QueryExecuted`, `TransactionBeginning`, `TransactionCommitted`, and `TransactionRolledBack`. |
 
 ### HTTP Request Logger (`http.request`)

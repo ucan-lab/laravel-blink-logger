@@ -61,3 +61,29 @@ it('expands SQL bindings into the logged message', function (): void {
     $listener = new QueryExecutedLogger($logger, $config);
     $listener->handle($event);
 });
+
+it('logs parameterized SQL with ? placeholders when redact_bindings is true', function (): void {
+    $connection = $this->app['db']->connection();
+    $event = new QueryExecuted('select * from users where id = ?', [42], 50.0, $connection);
+
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldReceive('debug')
+        ->once()
+        ->with(Mockery::on(fn (string $msg): bool => str_contains($msg, 'where id = ?')));
+
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldReceive('channel')->with('stack')->andReturn($channel);
+
+    $config = new Repository([
+        'blink-logger' => [
+            'query' => [
+                'channel' => 'stack',
+                'slow_query_time' => 100,
+                'redact_bindings' => true,
+            ],
+        ],
+    ]);
+
+    $listener = new QueryExecutedLogger($logger, $config);
+    $listener->handle($event);
+});

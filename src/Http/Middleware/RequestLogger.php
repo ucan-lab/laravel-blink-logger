@@ -8,6 +8,7 @@ use Closure;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Http\Request;
 use Illuminate\Log\LogManager;
+use LaravelBlinkLogger\Support\Redactor;
 use Psr\Log\LoggerInterface;
 
 class RequestLogger
@@ -18,6 +19,7 @@ class RequestLogger
     public function __construct(
         private Repository $config,
         private LoggerInterface $logger,
+        private Redactor $redactor,
     ) {}
 
     public function handle(Request $request, Closure $next)
@@ -47,8 +49,8 @@ class RequestLogger
     protected function write(Request $request): void
     {
         $data = [
-            'request' => $request->all(),
-            'headers' => $request->headers->all(),
+            'request' => $this->redactor->body($request->all()),
+            'headers' => $this->redactor->headers($request->headers->all()),
         ];
 
         $this->logger->channel($this->config->get('blink-logger.http.request.channel'))

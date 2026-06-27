@@ -2,15 +2,17 @@
 
 declare(strict_types=1);
 
+use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Http\Request;
 use Illuminate\Log\LogManager;
 use LaravelBlinkLogger\Http\Middleware\RequestLogger;
+use LaravelBlinkLogger\Support\Redactor;
 use Psr\Log\LoggerInterface;
 
-function makeRequestLogger(Repository $config, LoggerInterface|LogManager $logger): RequestLogger
+function makeRequestLogger(Repository $config, LoggerInterface|LogManager $logger, ?Redactor $redactor = null): RequestLogger
 {
-    return new RequestLogger($config, $logger);
+    return new RequestLogger($config, $logger, $redactor ?? new Redactor(new ConfigRepository([])));
 }
 
 it('logs request when path matches include_paths', function (): void {
@@ -151,5 +153,76 @@ it('include_paths takes priority over exclude_paths', function (): void {
 
     $request = Request::create('/api/users', 'GET');
     $middleware = makeRequestLogger($config, $logger);
+    $middleware->handle($request, fn ($r) => response('ok'));
+});
+
+it('masks sensitive body keys in the logged request context', function (): void {
+    $redactor = new Redactor(new ConfigRepository([
+        'blink-logger' => [
+            'redact' => [
+                'placeholder' => '***',
+                'headers' => [],
+                'body_keys' => ['password'],
+            ],
+        ],
+    ]));
+
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldReceive('debug')
+        ->once()
+        ->with(
+            Mockery::any(),
+            Mockery::on(function (array $context): bool {
+                return $context['request']['password'] === '***'
+                    && $context['request']['name'] === 'Alice';
+            })
+        );
+
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldReceive('channel')->andReturn($channel);
+
+    $config = Mockery::mock(Repository::class);
+    $config->shouldReceive('get')->with('blink-logger.http.request.include_paths')->andReturn([]);
+    $config->shouldReceive('get')->with('blink-logger.http.request.exclude_paths')->andReturn([]);
+    $config->shouldReceive('get')->with('blink-logger.http.request.channel')->andReturn('stack');
+
+    $request = Request::create('/api/users', 'POST', ['name' => 'Alice', 'password' => 'supersecret']);
+    $middleware = makeRequestLogger($config, $logger, $redactor);
+    $middleware->handle($request, fn ($r) => response('ok'));
+});
+
+it('masks sensitive headers in the logged request context', function (): void {
+    $redactor = new Redactor(new ConfigRepository([
+        'blink-logger' => [
+            'redact' => [
+                'placeholder' => '***',
+                'headers' => ['authorization'],
+                'body_keys' => [],
+            ],
+        ],
+    ]));
+
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldReceive('debug')
+        ->once()
+        ->with(
+            Mockery::any(),
+            Mockery::on(function (array $context): bool {
+                return $context['headers']['authorization'] === ['***']
+                    && $context['headers']['host'] === ['example.com'];
+            })
+        );
+
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldReceive('channel')->andReturn($channel);
+
+    $config = Mockery::mock(Repository::class);
+    $config->shouldReceive('get')->with('blink-logger.http.request.include_paths')->andReturn([]);
+    $config->shouldReceive('get')->with('blink-logger.http.request.exclude_paths')->andReturn([]);
+    $config->shouldReceive('get')->with('blink-logger.http.request.channel')->andReturn('stack');
+
+    $request = Request::create('http://example.com/api/users', 'GET');
+    $request->headers->set('Authorization', 'Bearer my-secret-token');
+    $middleware = makeRequestLogger($config, $logger, $redactor);
     $middleware->handle($request, fn ($r) => response('ok'));
 });
