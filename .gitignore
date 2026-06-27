@@ -5,3 +5,5 @@ composer.lock
 pint.json
 .phpunit.result.cache
 CLAUDE.local.md
+plan.md
+review.md
