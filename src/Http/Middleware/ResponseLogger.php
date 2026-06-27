@@ -6,11 +6,12 @@ namespace LaravelBlinkLogger\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Config\Repository;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Log\LogManager;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ResponseLogger
 {
@@ -27,7 +28,7 @@ class ResponseLogger
         return $next($request);
     }
 
-    public function terminate(Request $request, Response|JsonResponse $response): void
+    public function terminate(Request $request, SymfonyResponse $response): void
     {
         if ($this->isWrite($request)) {
             $this->write($response);
@@ -49,14 +50,27 @@ class ResponseLogger
         return true;
     }
 
-    protected function write(Response|JsonResponse $response): void
+    protected function write(SymfonyResponse $response): void
     {
+        $isStreamed = $response instanceof StreamedResponse
+            || $response instanceof BinaryFileResponse;
+
+        if ($isStreamed) {
+            $body = '<streamed>';
+        } else {
+            $content = $response->getContent();
+            $body = $content !== false ? $content : '';
+        }
+
+        $statusCode = $response->getStatusCode();
+        $statusText = SymfonyResponse::$statusTexts[$statusCode] ?? 'unknown status';
+
         $this->logger->channel($this->config->get('blink-logger.http.response.channel'))->debug(sprintf(
             '%d %s',
-            $response->status(),
-            $response->statusText(),
+            $statusCode,
+            $statusText,
         ), [
-            'body' => $response->content(),
+            'body' => $body,
             'headers' => $response->headers->all(),
         ]);
     }

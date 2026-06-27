@@ -8,6 +8,8 @@ use Illuminate\Http\Response;
 use Illuminate\Log\LogManager;
 use LaravelBlinkLogger\Http\Middleware\ResponseLogger;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 function makeResponseLogger(Repository $config, LoggerInterface|LogManager $logger): ResponseLogger
 {
@@ -118,4 +120,55 @@ it('writes status code and status text in the log message', function (): void {
 
     $middleware = makeResponseLogger($config, $logger);
     $middleware->terminate($request, $response);
+});
+
+it('does not throw TypeError and logs streamed placeholder for StreamedResponse', function (): void {
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldReceive('debug')
+        ->once()
+        ->with(Mockery::type('string'), Mockery::on(fn (array $context): bool => $context['body'] === '<streamed>'));
+
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldReceive('channel')->andReturn($channel);
+
+    $config = Mockery::mock(Repository::class);
+    $config->shouldReceive('get')->with('blink-logger.http.response.include_paths')->andReturn([]);
+    $config->shouldReceive('get')->with('blink-logger.http.response.exclude_paths')->andReturn([]);
+    $config->shouldReceive('get')->with('blink-logger.http.response.channel')->andReturn('stack');
+
+    $request = Request::create('/stream', 'GET');
+    $response = new StreamedResponse(function (): void {
+        echo 'streamed content';
+    }, 200);
+
+    $middleware = makeResponseLogger($config, $logger);
+    $middleware->terminate($request, $response);
+});
+
+it('does not throw TypeError and logs streamed placeholder for BinaryFileResponse', function (): void {
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldReceive('debug')
+        ->once()
+        ->with(Mockery::type('string'), Mockery::on(fn (array $context): bool => $context['body'] === '<streamed>'));
+
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldReceive('channel')->andReturn($channel);
+
+    $config = Mockery::mock(Repository::class);
+    $config->shouldReceive('get')->with('blink-logger.http.response.include_paths')->andReturn([]);
+    $config->shouldReceive('get')->with('blink-logger.http.response.exclude_paths')->andReturn([]);
+    $config->shouldReceive('get')->with('blink-logger.http.response.channel')->andReturn('stack');
+
+    $request = Request::create('/file', 'GET');
+    $tmpFile = tempnam(sys_get_temp_dir(), 'blink_test_');
+    assert($tmpFile !== false);
+    file_put_contents($tmpFile, 'binary content');
+
+    try {
+        $response = new BinaryFileResponse($tmpFile);
+        $middleware = makeResponseLogger($config, $logger);
+        $middleware->terminate($request, $response);
+    } finally {
+        @unlink($tmpFile);
+    }
 });
