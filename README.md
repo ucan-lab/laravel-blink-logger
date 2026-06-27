@@ -46,6 +46,53 @@ Copy the package config to your local config with the publish command:
 $ php artisan vendor:publish --tag=blink-logger
 ```
 
+## Configuration
+
+After publishing the config file, you can configure the following options in `config/blink-logger.php`.
+
+### Query Logger (`query`)
+
+| Key | Default | Env Variable | Description |
+|-----|---------|--------------|-------------|
+| `query.enabled` | `false` | `LOG_QUERY_ENABLED` | Enable or disable query logging. |
+| `query.channel` | `config('logging.default')` | — | Log channel to write query logs to. |
+| `query.slow_query_time` | `2000` | `LOG_SQL_SLOW_QUERY_TIME` | Threshold in milliseconds. Queries that exceed this value are logged at `warning` level instead of `debug`. |
+| `query.listeners` | See config | — | Map of database event classes to listener classes. Covers `QueryExecuted`, `TransactionBeginning`, `TransactionCommitted`, and `TransactionRolledBack`. |
+
+### HTTP Request Logger (`http.request`)
+
+| Key | Default | Env Variable | Description |
+|-----|---------|--------------|-------------|
+| `http.request.enabled` | `false` | `LOG_HTTP_REQUEST_ENABLED` | Enable or disable incoming HTTP request logging. |
+| `http.request.channel` | `config('logging.default')` | — | Log channel to write HTTP request logs to. |
+| `http.request.include_paths` | `[]` | — | If non-empty, only requests whose path exactly matches one of these values are logged. Takes precedence over `exclude_paths`. |
+| `http.request.exclude_paths` | `[]` | — | When `include_paths` is empty, requests whose path exactly matches any of these values are skipped. Has no effect when `include_paths` is non-empty. |
+| `http.request.middleware_group_names` | `['web', 'api']` | — | Middleware groups the request logger middleware is registered to. |
+
+### HTTP Response Logger (`http.response`)
+
+| Key | Default | Env Variable | Description |
+|-----|---------|--------------|-------------|
+| `http.response.enabled` | `false` | `LOG_HTTP_RESPONSE_ENABLED` | Enable or disable incoming HTTP response logging. |
+| `http.response.channel` | `config('logging.default')` | — | Log channel to write HTTP response logs to. |
+| `http.response.include_paths` | `[]` | — | If non-empty, only responses whose path exactly matches one of these values are logged. Takes precedence over `exclude_paths`. |
+| `http.response.exclude_paths` | `[]` | — | When `include_paths` is empty, responses whose path exactly matches any of these values are skipped. Has no effect when `include_paths` is non-empty. |
+| `http.response.middleware_group_names` | `['api']` | — | Middleware groups the response logger middleware is registered to. |
+
+### HTTP Client Request Logger (`http_client.request`)
+
+| Key | Default | Env Variable | Description |
+|-----|---------|--------------|-------------|
+| `http_client.request.enabled` | `false` | `LOG_HTTP_CLIENT_REQUEST_ENABLED` | Enable or disable outgoing HTTP client request logging. |
+| `http_client.request.channel` | `config('logging.default')` | — | Log channel to write HTTP client request logs to. |
+
+### HTTP Client Response Logger (`http_client.response`)
+
+| Key | Default | Env Variable | Description |
+|-----|---------|--------------|-------------|
+| `http_client.response.enabled` | `false` | `LOG_HTTP_CLIENT_RESPONSE_ENABLED` | Enable or disable outgoing HTTP client response logging. |
+| `http_client.response.channel` | `config('logging.default')` | — | Log channel to write HTTP client response logs to. |
+
 ## Usage
 
 Watch the log file.
