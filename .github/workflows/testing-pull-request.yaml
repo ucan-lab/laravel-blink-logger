@@ -48,6 +48,21 @@ jobs:
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist
       - name: Composer Audit
         run: composer audit
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: pcov
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist
+      - name: Run Tests with Coverage
+        run: ./vendor/bin/pest --coverage --min=80
   test:
     name: test (PHP ${{ matrix.combo.php }}, Laravel ${{ matrix.combo.laravel }}, ${{ matrix.stability }})
     runs-on: ubuntu-latest
