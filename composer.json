@@ -39,6 +39,7 @@
         }
     },
     "require-dev": {
+        "larastan/larastan": "^3.0",
         "laravel/pint": "1.29.*",
         "mockery/mockery": "^1.6",
         "orchestra/testbench": "^9.0|^10.0|^11.0",
@@ -50,6 +51,7 @@
         }
     },
     "scripts": {
-        "test": "pest"
+        "test": "pest",
+        "analyse": "phpstan analyse"
     }
 }
