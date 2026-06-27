@@ -100,6 +100,43 @@ it('reads channel from request config, not response config', function (): void {
     $listener->handle($event);
 });
 
+it('masks sensitive query parameter in the logged HTTP client request url message', function (): void {
+    $psrRequest = new GuzzlePsrRequest('GET', 'https://api.example.com/data?token=secret-jwt&page=1', [], null);
+    $clientRequest = new ClientRequest($psrRequest);
+    $event = new RequestSending($clientRequest);
+
+    $redactor = new Redactor(new Repository([
+        'blink-logger' => [
+            'redact' => [
+                'placeholder' => '***',
+                'headers' => [],
+                'body_keys' => ['token'],
+            ],
+        ],
+    ]));
+
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldReceive('debug')
+        ->once()
+        ->with(
+            Mockery::on(function (string $message): bool {
+                return str_contains($message, 'token=')
+                    && ! str_contains($message, 'secret-jwt');
+            }),
+            Mockery::any()
+        );
+
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldReceive('channel')->with('stack')->andReturn($channel);
+
+    $config = new Repository([
+        'blink-logger' => ['http_client' => ['request' => ['channel' => 'stack']]],
+    ]);
+
+    $listener = new RequestSendingLogger($logger, $config, $redactor);
+    $listener->handle($event);
+});
+
 it('masks sensitive authorization header in HTTP client request log', function (): void {
     $psrRequest = new GuzzlePsrRequest(
         'GET',

@@ -200,3 +200,78 @@ it('falls back to empty redact list for body when config is missing', function (
 
     expect($result['password'])->toBe('secret');
 });
+
+// --- url() ---
+
+it('masks a sensitive query parameter by body_keys', function (): void {
+    $redactor = makeRedactor(['body_keys' => ['token']]);
+
+    $result = $redactor->url('https://api.example.com/auth?token=secret-jwt&page=1');
+
+    expect($result)->toContain('token=%2A%2A%2A')
+        ->and($result)->toContain('page=1');
+});
+
+it('does not mask a non-sensitive query parameter', function (): void {
+    $redactor = makeRedactor(['body_keys' => ['token']]);
+
+    $result = $redactor->url('https://api.example.com/users?page=2&per_page=10');
+
+    expect($result)->toContain('page=2')
+        ->and($result)->toContain('per_page=10');
+});
+
+it('returns the url unchanged when there is no query string', function (): void {
+    $redactor = makeRedactor();
+
+    $url = 'https://api.example.com/users';
+
+    expect($redactor->url($url))->toBe($url);
+});
+
+it('masks multiple sensitive query parameters in one url', function (): void {
+    $redactor = makeRedactor(['body_keys' => ['token', 'secret']]);
+
+    $result = $redactor->url('https://api.example.com/data?token=abc&secret=xyz&name=alice');
+
+    expect($result)->toContain('token=%2A%2A%2A')
+        ->and($result)->toContain('secret=%2A%2A%2A')
+        ->and($result)->toContain('name=alice');
+});
+
+it('masks query parameter case-insensitively when key differs in case', function (): void {
+    $redactor = makeRedactor(['body_keys' => ['token']]);
+
+    $result = $redactor->url('https://api.example.com/auth?Token=secret-value&page=1');
+
+    expect($result)->toContain('Token=%2A%2A%2A')
+        ->and($result)->toContain('page=1');
+});
+
+it('preserves fragment in url when masking query parameter', function (): void {
+    $redactor = makeRedactor(['body_keys' => ['token']]);
+
+    $result = $redactor->url('https://api.example.com/page?token=secret#section');
+
+    expect($result)->toContain('token=%2A%2A%2A')
+        ->and($result)->toContain('#section');
+});
+
+it('returns url unchanged when query has no sensitive parameters', function (): void {
+    $redactor = makeRedactor(['body_keys' => ['password']]);
+
+    $url = 'https://api.example.com/search?q=hello&lang=en';
+    $result = $redactor->url($url);
+
+    expect($result)->toContain('q=hello')
+        ->and($result)->toContain('lang=en');
+});
+
+it('falls back to no masking for url when body_keys config is missing', function (): void {
+    $redactor = new Redactor(new Repository([]));
+
+    $url = 'https://api.example.com/auth?token=secret';
+    $result = $redactor->url($url);
+
+    expect($result)->toContain('token=secret');
+});

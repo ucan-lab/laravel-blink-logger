@@ -191,6 +191,41 @@ it('masks sensitive body keys in the logged request context', function (): void 
     $middleware->handle($request, fn ($r) => response('ok'));
 });
 
+it('masks sensitive query parameter in the logged request url message', function (): void {
+    $redactor = new Redactor(new ConfigRepository([
+        'blink-logger' => [
+            'redact' => [
+                'placeholder' => '***',
+                'headers' => [],
+                'body_keys' => ['token'],
+            ],
+        ],
+    ]));
+
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldReceive('debug')
+        ->once()
+        ->with(
+            Mockery::on(function (string $message): bool {
+                return str_contains($message, 'token=')
+                    && ! str_contains($message, 'secret-value');
+            }),
+            Mockery::any()
+        );
+
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldReceive('channel')->andReturn($channel);
+
+    $config = Mockery::mock(Repository::class);
+    $config->shouldReceive('get')->with('blink-logger.http.request.include_paths')->andReturn([]);
+    $config->shouldReceive('get')->with('blink-logger.http.request.exclude_paths')->andReturn([]);
+    $config->shouldReceive('get')->with('blink-logger.http.request.channel')->andReturn('stack');
+
+    $request = Request::create('http://example.com/api/data?token=secret-value&page=1', 'GET');
+    $middleware = makeRequestLogger($config, $logger, $redactor);
+    $middleware->handle($request, fn ($r) => response('ok'));
+});
+
 it('masks sensitive headers in the logged request context', function (): void {
     $redactor = new Redactor(new ConfigRepository([
         'blink-logger' => [

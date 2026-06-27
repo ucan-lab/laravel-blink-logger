@@ -145,6 +145,129 @@ it('includes status code and reason phrase in log message', function (): void {
     $listener->handle($event);
 });
 
+it('treats application/ld+json as JSON and masks body keys', function (): void {
+    $psrRequest = new GuzzlePsrRequest('GET', 'https://api.example.com/data');
+    $psrResponse = new GuzzlePsrResponse(
+        200,
+        ['Content-Type' => 'application/ld+json'],
+        json_encode(['token' => 'secret-jwt', 'name' => 'alice'])
+    );
+    $event = new ResponseReceived(new ClientRequest($psrRequest), new ClientResponse($psrResponse));
+
+    $redactor = new Redactor(new Repository([
+        'blink-logger' => [
+            'redact' => [
+                'placeholder' => '***',
+                'headers' => [],
+                'body_keys' => ['token'],
+            ],
+        ],
+    ]));
+
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldReceive('debug')
+        ->once()
+        ->with(
+            Mockery::any(),
+            Mockery::on(function (array $context): bool {
+                return $context['body']['token'] === '***'
+                    && $context['body']['name'] === 'alice';
+            })
+        );
+
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldReceive('channel')->with('stack')->andReturn($channel);
+
+    $config = new Repository([
+        'blink-logger' => ['http_client' => ['response' => ['channel' => 'stack']]],
+    ]);
+
+    $listener = new ResponseReceivedLogger($logger, $config, $redactor);
+    $listener->handle($event);
+});
+
+it('treats application/problem+json as JSON and masks body keys', function (): void {
+    $psrRequest = new GuzzlePsrRequest('GET', 'https://api.example.com/resource');
+    $psrResponse = new GuzzlePsrResponse(
+        200,
+        ['Content-Type' => 'application/problem+json'],
+        json_encode(['token' => 'secret-jwt', 'detail' => 'ok'])
+    );
+    $event = new ResponseReceived(new ClientRequest($psrRequest), new ClientResponse($psrResponse));
+
+    $redactor = new Redactor(new Repository([
+        'blink-logger' => [
+            'redact' => [
+                'placeholder' => '***',
+                'headers' => [],
+                'body_keys' => ['token'],
+            ],
+        ],
+    ]));
+
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldReceive('debug')
+        ->once()
+        ->with(
+            Mockery::any(),
+            Mockery::on(function (array $context): bool {
+                return $context['body']['token'] === '***'
+                    && $context['body']['detail'] === 'ok';
+            })
+        );
+
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldReceive('channel')->with('stack')->andReturn($channel);
+
+    $config = new Repository([
+        'blink-logger' => ['http_client' => ['response' => ['channel' => 'stack']]],
+    ]);
+
+    $listener = new ResponseReceivedLogger($logger, $config, $redactor);
+    $listener->handle($event);
+});
+
+it('treats text/json as JSON and masks body keys', function (): void {
+    $psrRequest = new GuzzlePsrRequest('GET', 'https://api.example.com/resource');
+    $psrResponse = new GuzzlePsrResponse(
+        200,
+        ['Content-Type' => 'text/json'],
+        json_encode(['token' => 'secret-jwt', 'status' => 'ok'])
+    );
+    $event = new ResponseReceived(new ClientRequest($psrRequest), new ClientResponse($psrResponse));
+
+    $redactor = new Redactor(new Repository([
+        'blink-logger' => [
+            'redact' => [
+                'placeholder' => '***',
+                'headers' => [],
+                'body_keys' => ['token'],
+            ],
+        ],
+    ]));
+
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldReceive('debug')
+        ->once()
+        ->with(
+            Mockery::any(),
+            Mockery::on(function (array $context): bool {
+                return $context['body']['token'] === '***'
+                    && $context['body']['status'] === 'ok';
+            })
+        );
+
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldReceive('channel')->with('stack')->andReturn($channel);
+
+    $config = new Repository([
+        'blink-logger' => ['http_client' => ['response' => ['channel' => 'stack']]],
+    ]);
+
+    $listener = new ResponseReceivedLogger($logger, $config, $redactor);
+    $listener->handle($event);
+});
+
 it('masks sensitive authorization header in HTTP client response log', function (): void {
     $psrRequest = new GuzzlePsrRequest('GET', 'https://api.example.com/data');
     $psrResponse = new GuzzlePsrResponse(

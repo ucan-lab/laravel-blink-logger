@@ -54,6 +54,6 @@ class RequestLogger
         ];
 
         $this->logger->channel($this->config->get('blink-logger.http.request.channel'))
-            ->debug(sprintf('%s: %s', $request->method(), $request->fullUrl()), $data);
+            ->debug(sprintf('%s: %s', $request->method(), $this->redactor->url($request->fullUrl())), $data);
     }
 }

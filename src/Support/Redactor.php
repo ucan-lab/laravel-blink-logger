@@ -39,6 +39,60 @@ class Redactor
         return $result;
     }
 
+    public function url(string $url): string
+    {
+        $parsed = parse_url($url);
+
+        if (! isset($parsed['query'])) {
+            return $url;
+        }
+
+        parse_str($parsed['query'], $queryParams);
+
+        $raw = $this->config->get('blink-logger.redact.body_keys');
+        $redactKeys = array_map(
+            static fn (mixed $k): string => mb_strtolower((string) $k),
+            is_array($raw) ? $raw : [],
+        );
+        $placeholder = $this->placeholder();
+
+        $maskedParams = [];
+        foreach ($queryParams as $key => $value) {
+            if (in_array(mb_strtolower((string) $key), $redactKeys, true)) {
+                $maskedParams[$key] = $placeholder;
+            } else {
+                $maskedParams[$key] = $value;
+            }
+        }
+
+        $reconstructed = '';
+        if (isset($parsed['scheme'])) {
+            $reconstructed .= $parsed['scheme'] . '://';
+        }
+        if (isset($parsed['user'])) {
+            $reconstructed .= $parsed['user'];
+            if (isset($parsed['pass'])) {
+                $reconstructed .= ':' . $parsed['pass'];
+            }
+            $reconstructed .= '@';
+        }
+        if (isset($parsed['host'])) {
+            $reconstructed .= $parsed['host'];
+        }
+        if (isset($parsed['port'])) {
+            $reconstructed .= ':' . $parsed['port'];
+        }
+        if (isset($parsed['path'])) {
+            $reconstructed .= $parsed['path'];
+        }
+        $reconstructed .= '?' . http_build_query($maskedParams);
+        if (isset($parsed['fragment'])) {
+            $reconstructed .= '#' . $parsed['fragment'];
+        }
+
+        return $reconstructed;
+    }
+
     public function body(mixed $body): mixed
     {
         if (! is_array($body)) {

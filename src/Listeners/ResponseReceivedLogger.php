@@ -37,6 +37,10 @@ class ResponseReceivedLogger
 
     private function isJson(Response $response): bool
     {
-        return Str::startsWith($response->header('Content-Type'), 'application/json');
+        $contentType = mb_strtolower($response->header('Content-Type'));
+
+        return Str::startsWith($contentType, 'application/json')
+            || Str::startsWith($contentType, 'text/json')
+            || (Str::startsWith($contentType, 'application/') && Str::contains($contentType, '+json'));
     }
 }
