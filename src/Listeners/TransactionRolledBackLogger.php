@@ -16,8 +16,7 @@ class TransactionRolledBackLogger
     public function __construct(
         private LoggerInterface $logger,
         private Repository $config,
-    ) {
-    }
+    ) {}
 
     public function handle(): void
     {
