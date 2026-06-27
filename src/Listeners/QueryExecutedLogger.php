@@ -28,7 +28,7 @@ class QueryExecutedLogger
                 bindings: $event->connection->prepareBindings($event->bindings),
             );
 
-        if ($event->time > config('blink-logger.query.slow_query_time')) {
+        if ($event->time > $this->config->get('blink-logger.query.slow_query_time')) {
             $this->logger->channel($this->config->get('blink-logger.query.channel'))->warning(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
         } else {
             $this->logger->channel($this->config->get('blink-logger.query.channel'))->debug(sprintf('%.2f ms, SQL: %s;', $event->time, $sql));
