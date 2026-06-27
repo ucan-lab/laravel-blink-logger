@@ -20,8 +20,8 @@ Clear, simple English is preferred so that non-native speakers can follow along.
 
 | Package | Version                |
 |---------|------------------------|
-| PHP     | `^8.2`                 |
-| Laravel | `^11.0 / ^12.0 / ^13.0` |
+| PHP     | `^8.3`                 |
+| Laravel | `^12.0 / ^13.0`        |
 
 Dependencies are managed with [Composer](https://getcomposer.org/).
 
@@ -64,6 +64,46 @@ To auto-fix code style, run:
   ./vendor/bin/pest --coverage --min=80
   ```
 
+### Using Docker (optional)
+
+If you prefer not to install PHP locally, a Docker setup is provided. It ships PHP with
+the `pcov` coverage driver, so coverage works out of the box. Run any task through the
+`make` shortcuts:
+
+```bash
+make build       # Build the image (defaults to PHP 8.3)
+make install     # Install dependencies (composer update)
+make test        # Run the test suite
+make coverage    # Run tests with the 80% coverage gate
+make ci          # Run all checks: pint, phpstan, audit, coverage, validate
+make shell       # Open a shell in the container
+```
+
+Build and test against a specific supported PHP version with `PHP_VERSION`:
+
+```bash
+make PHP_VERSION=8.4 build install test
+```
+
+Dependencies live in a per-version volume inside the container, so the host and Docker
+(and PHP 8.3 vs 8.4) never share a `vendor/`. After switching `PHP_VERSION`, run
+`make install` once to resolve dependencies for that version.
+
+> [!NOTE]
+> Because `vendor/` is kept in a container volume, it is **not** written to the host, so a
+> host IDE cannot index the installed packages (no autocompletion / go-to-definition for
+> dependencies). If you want IDE support on the host, comment out the
+> `composer-vendor:/app/vendor` mount in `docker-compose.yml` so `make install` writes
+> `vendor/` back to the host. Note that the host `vendor/` is then resolved for a single
+> PHP version, so re-run `make install` after switching `PHP_VERSION`.
+
+> [!NOTE]
+> The container runs as `root`, so on **Linux** any file written back to the bind-mounted
+> project (for example, source files reformatted by `make pint`) is owned by `root` on the
+> host. If that is inconvenient, run the container as your host user by adding
+> `user: "${UID}:${GID}"` to the `app` service in `docker-compose.yml`. On macOS this is a
+> non-issue because Docker Desktop maps file ownership for you.
+
 ## Coding Standards
 
 - Code style is enforced by **Laravel Pint** — run it before committing.
@@ -102,7 +142,7 @@ docs: clarify query binding redaction warning
    - A reference to any related issue (e.g. `Closes #123`).
 4. Keep pull requests focused — one logical change per PR is easier to review.
 
-CI runs Pint, PHPStan, Composer audit, and the test matrix (PHP 8.2–8.4 against Laravel
+CI runs Pint, PHPStan, Composer audit, and the test matrix (PHP 8.3–8.4 against Laravel
 12/13, with both `prefer-lowest` and `prefer-stable` resolutions). All checks must be green
 before a PR can be merged.
 
