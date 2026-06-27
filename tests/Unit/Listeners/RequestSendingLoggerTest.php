@@ -26,7 +26,7 @@ it('logs HTTP client request method and url as debug', function (): void {
     $config = new Repository([
         'blink-logger' => [
             'http_client' => [
-                'response' => ['channel' => 'stack'],
+                'request' => ['channel' => 'stack'],
             ],
         ],
     ]);
@@ -61,7 +61,31 @@ it('includes body and headers in the log context', function (): void {
     $config = new Repository([
         'blink-logger' => [
             'http_client' => [
-                'response' => ['channel' => 'stack'],
+                'request' => ['channel' => 'stack'],
+            ],
+        ],
+    ]);
+
+    $listener = new RequestSendingLogger($logger, $config);
+    $listener->handle($event);
+});
+
+it('reads channel from request config, not response config', function (): void {
+    $psrRequest = new GuzzlePsrRequest('GET', 'https://api.example.com/ping', [], null);
+    $clientRequest = new ClientRequest($psrRequest);
+    $event = new RequestSending($clientRequest);
+
+    $channel = Mockery::mock(LoggerInterface::class);
+    $channel->shouldReceive('debug')->once();
+
+    $logger = Mockery::mock(LogManager::class);
+    $logger->shouldReceive('channel')->with('req-channel')->andReturn($channel);
+
+    $config = new Repository([
+        'blink-logger' => [
+            'http_client' => [
+                'request' => ['channel' => 'req-channel'],
+                'response' => ['channel' => 'res-channel'],
             ],
         ],
     ]);
